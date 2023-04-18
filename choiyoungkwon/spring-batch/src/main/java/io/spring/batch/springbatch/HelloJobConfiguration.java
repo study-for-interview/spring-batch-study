@@ -21,6 +21,7 @@ public class HelloJobConfiguration {
     public Job myJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         Job myJob = new JobBuilder("myJob", jobRepository)
                 .start(oneStep(jobRepository, transactionManager))
+                .next(twoStep(jobRepository, transactionManager))
                 .build();
         return myJob;
     }
@@ -31,6 +32,17 @@ public class HelloJobConfiguration {
                 .tasklet((contribution, chunkContext) -> {
                     log.info("-".repeat(80));
                     log.info("hello spring batch!!");
+                    log.info("-".repeat(80));
+                    return RepeatStatus.FINISHED;
+                }, transactionManager) // or .chunk(chunkSize, transactionManager)
+                .build();
+    }
+    @Bean
+    public Step twoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("oneStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("-".repeat(80));
+                    log.info("Two Step Running!!");
                     log.info("-".repeat(80));
                     return RepeatStatus.FINISHED;
                 }, transactionManager) // or .chunk(chunkSize, transactionManager)

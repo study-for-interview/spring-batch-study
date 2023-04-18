@@ -9,6 +9,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class JobRunner implements ApplicationRunner {
@@ -17,7 +20,12 @@ public class JobRunner implements ApplicationRunner {
     private final Job job;
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        JobParameters jobParameters = new JobParametersBuilder().addString("name", "user1").toJobParameters();
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("name", "user2")
+                .addLong("seq",1L)
+                .addLocalDate("twoDay", LocalDate.now())
+                .addLocalDateTime("twoDayTime", LocalDateTime.now())
+                .toJobParameters();
         jobLauncher.run(job, jobParameters);
     }
 }
