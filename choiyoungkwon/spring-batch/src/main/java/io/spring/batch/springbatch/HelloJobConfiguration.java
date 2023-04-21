@@ -30,6 +30,7 @@ public class HelloJobConfiguration {
     public Step oneStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("oneStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
+                    Thread.sleep(5000);
                     log.info("-".repeat(80));
                     log.info("hello spring batch!!");
                     log.info("-".repeat(80));
