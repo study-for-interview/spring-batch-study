@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,15 +28,23 @@ public class JobLauncherController {
 
     private final TaskExecutorJobLauncher taskExecutorJobLauncher;
 
-    @PostMapping("/batch")
-    public String launch(@RequestBody Member member) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("id", member.getId())
-                .addDate("date", new Date())
-                .toJobParameters();
-
-        taskExecutorJobLauncher.run(job, jobParameters);
-
-        return "batch completed";
-    }
+//    @PostMapping("/batch")
+//    public String launch(@RequestBody Member member) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+//        JobParameters jobParameters = new JobParametersBuilder()
+//                .addString("id", member.getId())
+//                .addDate("date", new Date())
+//                .toJobParameters();
+//        List<String> test = new ArrayList<>(){
+//
+//            @Override
+//            public boolean isEmpty() {
+//                return true;
+//            }
+//
+//        };
+//        List<String> test1 = test.stream().filter(s -> s.equals("test")).map(s -> s.toUpperCase()).collect(Collectors.toList());
+//        taskExecutorJobLauncher.run(job, jobParameters);
+//
+//        return "batch completed";
+//    }
 }

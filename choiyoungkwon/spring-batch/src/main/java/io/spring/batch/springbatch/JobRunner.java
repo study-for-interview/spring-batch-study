@@ -23,8 +23,8 @@ public class JobRunner implements ApplicationRunner {
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("name", "user2")
                 .addLong("seq",1L)
-//                .addLocalDate("twoDay", LocalDate.now())
-//                .addLocalDateTime("twoDayTime", LocalDateTime.now())
+                .addLocalDate("twoDay", LocalDate.now())
+                .addLocalDateTime("twoDayTime", LocalDateTime.now())
                 .toJobParameters();
         jobLauncher.run(job, jobParameters);
     }
