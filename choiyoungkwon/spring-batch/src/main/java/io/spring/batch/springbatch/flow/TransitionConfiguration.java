@@ -1,5 +1,6 @@
 package io.spring.batch.springbatch.flow;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -15,32 +16,24 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class FlowJobConfiguration {
+public class TransitionConfiguration {
 
-
-    //    @Bean
-    public Job flowJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new JobBuilder("flowJob", jobRepository)
-                .start(oneStep(jobRepository, transactionManager))
+    @Bean
+    public Job transitionTestJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new JobBuilder("transitionText", jobRepository)
+                .start(step1(jobRepository, transactionManager))
                 .on("COMPLETED")
-                .to(threeStep(jobRepository, transactionManager))
-                .from(oneStep(jobRepository, transactionManager))
-                .on("FAILED")
-                .to(twoStep(jobRepository, transactionManager))
-                .from(threeStep(jobRepository, transactionManager))
+                .to(step2(jobRepository, transactionManager))
+                .from(step2(jobRepository, transactionManager))
                 .on("COMPLETED")
-                .to(twoStep(jobRepository, transactionManager))
+                .to(step3(jobRepository, transactionManager))
                 .end()
-//
-//                .start(oneStep(jobRepository, transactionManager))
-//                .on("COMPLETED")
-//                .to(twoStep(jobRepository, transactionManager))
-//                .end()
                 .build();
     }
 
+
     @Bean
-    public Step oneStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("oneStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     log.info("-".repeat(80));
@@ -53,7 +46,7 @@ public class FlowJobConfiguration {
     }
 
     @Bean
-    public Step twoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step step2(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("twoStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     log.info("-".repeat(80));
@@ -65,24 +58,11 @@ public class FlowJobConfiguration {
     }
 
     @Bean
-    public Step threeStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Step step3(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("threeStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
                     log.info("-".repeat(80));
                     log.info("Three Step Running!!");
-                    log.info("-".repeat(80));
-//                    throw new RuntimeException("FAIL");
-                    return RepeatStatus.FINISHED;
-                }, transactionManager) // or .chunk(chunkSize, transactionManager)
-                .build();
-    }
-
-    @Bean
-    public Step fourStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("fourStep", jobRepository)
-                .tasklet((contribution, chunkContext) -> {
-                    log.info("-".repeat(80));
-                    log.info("Four Step Running!!");
                     log.info("-".repeat(80));
 //                    throw new RuntimeException("FAIL");
                     return RepeatStatus.FINISHED;
