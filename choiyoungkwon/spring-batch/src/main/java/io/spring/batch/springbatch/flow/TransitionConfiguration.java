@@ -1,8 +1,10 @@
 package io.spring.batch.springbatch.flow;
 
 
+import io.spring.batch.springbatch.listener.PassCheckingListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -22,8 +24,10 @@ public class TransitionConfiguration {
     public Job transitionTestJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new JobBuilder("transitionText", jobRepository)
                 .start(step1(jobRepository, transactionManager))
-                .on("COMPLETED")
+                .on("FAILED")
                 .to(step2(jobRepository, transactionManager))
+                .on("PASS")
+                .stop()
                 .from(step2(jobRepository, transactionManager))
                 .on("COMPLETED")
                 .to(step3(jobRepository, transactionManager))
@@ -39,6 +43,7 @@ public class TransitionConfiguration {
                     log.info("-".repeat(80));
                     log.info("hello spring batch!!");
                     log.info("-".repeat(80));
+                    contribution.setExitStatus(ExitStatus.FAILED);
 //                    throw new RuntimeException("FAIL");
                     return RepeatStatus.FINISHED;
                 }, transactionManager) // or .chunk(chunkSize, transactionManager)
@@ -54,6 +59,7 @@ public class TransitionConfiguration {
                     log.info("-".repeat(80));
                     return RepeatStatus.FINISHED;
                 }, transactionManager) // or .chunk(chunkSize, transactionManager)
+                .listener(new PassCheckingListener())
                 .build();
     }
 
