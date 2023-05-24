@@ -25,7 +25,15 @@ public class FlowJobConfiguration {
                 .on("COMPLETED").to(threeStep(jobRepository, transactionManager))
                 .from(oneStep(jobRepository, transactionManager))
                 .on("FAILED").to(twoStep(jobRepository, transactionManager))
+                .next(threeStep(jobRepository, transactionManager))
+                .on("*")
+                .to(fourStep(jobRepository, transactionManager))
                 .end()
+//
+//                .start(oneStep(jobRepository, transactionManager))
+//                .on("COMPLETED")
+//                .to(twoStep(jobRepository, transactionManager))
+//                .end()
                 .build();
     }
 
@@ -36,8 +44,8 @@ public class FlowJobConfiguration {
                     log.info("-".repeat(80));
                     log.info("hello spring batch!!");
                     log.info("-".repeat(80));
-                    throw new RuntimeException("FAIL");
-//                    return RepeatStatus.FINISHED;
+//                    throw new RuntimeException("FAIL");
+                    return RepeatStatus.FINISHED;
                 }, transactionManager) // or .chunk(chunkSize, transactionManager)
                 .build();
     }
@@ -60,6 +68,20 @@ public class FlowJobConfiguration {
                     log.info("-".repeat(80));
                     log.info("Three Step Running!!");
                     log.info("-".repeat(80));
+//                    throw new RuntimeException("FAIL");
+                    return RepeatStatus.FINISHED;
+                }, transactionManager) // or .chunk(chunkSize, transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Step fourStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("fourStep", jobRepository)
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("-".repeat(80));
+                    log.info("Four Step Running!!");
+                    log.info("-".repeat(80));
+//                    throw new RuntimeException("FAIL");
                     return RepeatStatus.FINISHED;
                 }, transactionManager) // or .chunk(chunkSize, transactionManager)
                 .build();
