@@ -11,16 +11,14 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @RequiredArgsConstructor
-@Configuration
+//@Configuration
 public class TransitionConfiguration {
 
-    @Bean
+    //    @Bean
     public Job transitionTestJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new JobBuilder("transitionText", jobRepository)
                 .start(step1(jobRepository, transactionManager))
@@ -36,7 +34,7 @@ public class TransitionConfiguration {
     }
 
 
-    @Bean
+    //    @Bean
     public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("oneStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
@@ -50,7 +48,7 @@ public class TransitionConfiguration {
                 .build();
     }
 
-    @Bean
+    //    @Bean
     public Step step2(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("twoStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
@@ -63,7 +61,7 @@ public class TransitionConfiguration {
                 .build();
     }
 
-    @Bean
+    //    @Bean
     public Step step3(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("threeStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
