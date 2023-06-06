@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -24,10 +26,8 @@ public class FlowJobConfiguration {
     public Job flowJob(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new JobBuilder("flowJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(oneStep(jobRepository, transactionManager))
-                .next(decider())
-                .from(decider()).on("ODD").to(oddStep(jobRepository, transactionManager))
-                .from(decider()).on("EVEN").to(evenStep(jobRepository, transactionManager))
+                .start(simpleFlow(jobRepository, transactionManager))
+                .next(threeStep(jobRepository, transactionManager))
                 .end()
 //
 //                .start(oneStep(jobRepository, transactionManager))
@@ -35,6 +35,15 @@ public class FlowJobConfiguration {
 //                .to(twoStep(jobRepository, transactionManager))
 //                .end()
                 .build();
+    }
+
+    @Bean
+    public Flow simpleFlow(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        FlowBuilder<Flow> builder = new FlowBuilder<>("flow");
+        builder.start(oneStep(jobRepository, transactionManager))
+                .next(twoStep(jobRepository, transactionManager))
+                .end();
+        return builder.build();
     }
 
     @Bean
